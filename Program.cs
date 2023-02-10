@@ -26,12 +26,9 @@ try
 
     driver.FindElement(By.CssSelector("i.icon-video-play")).Click();
 }
-catch (Exception e)
+catch (WebDriverException e)
 {
     Console.WriteLine(e.StackTrace);
-}
-finally
-{
     driver?.Quit();
 }
 
