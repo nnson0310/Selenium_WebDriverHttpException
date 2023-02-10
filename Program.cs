@@ -2,19 +2,36 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 
-ChromeOptions chromeOptions = new ChromeOptions();
-chromeOptions.AcceptInsecureCertificates = true;
-chromeOptions.AddArgument("--disable-gpu");
-chromeOptions.AddArgument("--no-sandbox");
 
-IWebDriver driver = new ChromeDriver(chromeOptions);
-driver.Url = "https://www.ericsson.com/en/";
-driver.Manage().Window.Maximize();
-driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(15);
+IWebDriver? driver = null;
+try
+{
+    ChromeDriverService chromeDriverService = ChromeDriverService.CreateDefaultService();
+    chromeDriverService.EnableVerboseLogging = true;
+    chromeDriverService.LogPath = Path.Combine(Directory.GetCurrentDirectory().Split("bin")[0], "chromedriver.log");
 
-driver.Navigate().GoToUrl("https://www.ericsson.com/en/future-technologies/videos/from-1g-to-6g-with-senior-expert-erik-dahlman");
-driver.FindElement(By.CssSelector("a#CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll")).Click();
+    ChromeOptions chromeOptions = new ChromeOptions();
+    chromeOptions.AcceptInsecureCertificates = true;
+    chromeOptions.AddArgument("--disable-gpu");
+    chromeOptions.AddArgument("--no-sandbox");
+    chromeOptions.SetLoggingPreference(LogType.Driver, LogLevel.Debug);
 
-driver.FindElement(By.CssSelector("i.icon-video-play")).Click();
+    driver = new ChromeDriver(chromeDriverService, chromeOptions);
+    driver.Url = "https://www.ericsson.com/en/";
+    driver.Manage().Window.Maximize();
+    driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(15);
 
-driver.Quit();
+    driver.Navigate().GoToUrl("https://www.ericsson.com/en/future-technologies/videos/from-1g-to-6g-with-senior-expert-erik-dahlman");
+    driver.FindElement(By.CssSelector("a#CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll")).Click();
+
+    driver.FindElement(By.CssSelector("i.icon-video-play")).Click();
+}
+catch (Exception e)
+{
+    Console.WriteLine(e.StackTrace);
+}
+finally
+{
+    driver?.Quit();
+}
+
